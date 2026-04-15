@@ -1,0 +1,8 @@
+{
+  "name": "observational-memory",
+  "description": "Automatic behavioral profiling for Claude Code sessions. Watches how you work, extracts patterns, and builds a portable behavioral profile that any AI agent can load.",
+  "author": {
+    "name": "Jeremy Gatt",
+    "email": "jeremy@jeremygatt.com"
+  }
+}
