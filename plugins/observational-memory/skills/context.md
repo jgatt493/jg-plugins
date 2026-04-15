@@ -39,6 +39,12 @@ Once setup is complete, continue to Step 2.
 5. Check if `~/.observational-memory/memory/projects/{slug}_context.md` exists. If it does, read it — project-specific contextual annotations. Apply as informational background.
 6. When global and project rules conflict, project rules take precedence.
 
+## Step 3: Confirm
+
+After loading, print a single-line confirmation so the user knows the skill ran. Format:
+
+`Observational memory loaded: global (Xk chars), {slug} (Xk chars)` — listing only the files that were found and loaded. If no files were found, print `Observational memory: no profiles generated yet`.
+
 ## Important
 
 - If `global.md` does not exist yet, skip it — the memory system has not yet generated observations. This is normal on a fresh install before any sessions have been observed.
