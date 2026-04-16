@@ -1,0 +1,13 @@
+{
+  "name": "jg-plugins",
+  "owner": {
+    "name": "jgatt493"
+  },
+  "plugins": [
+    {
+      "name": "observational-memory",
+      "source": "./plugins/observational-memory",
+      "description": "Automatic behavioral profiling for Claude Code sessions. Watches how you work, extracts patterns, and builds a portable behavioral profile that any AI agent can load."
+    }
+  ]
+}
