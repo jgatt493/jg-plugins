@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# SessionStart hook for observational-memory plugin
+# Reads behavioral profile files and injects them as context
+
+set -euo pipefail
+
+OM_DIR="${HOME}/.observational-memory"
+MEMORY_DIR="${OM_DIR}/memory"
+
+# If not installed, inject setup instructions
+if [ ! -f "${OM_DIR}/memory.db" ]; then
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+  PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+  setup_content=$(cat "${PLUGIN_ROOT}/skills/context.md" 2>/dev/null || echo "Observational memory plugin installed but skill file not found.")
+
+  escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+  }
+
+  escaped=$(escape_for_json "$setup_content")
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$escaped"
+  exit 0
+fi
+
+# Derive project slug from cwd: basename, lowercase, non-alnum to dash, strip leading/trailing dashes
+slug=$(basename "${PWD}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g; s/^-*//; s/-*$//')
+
+# Collect context
+context=""
+loaded=""
+
+# Global core
+if [ -f "${MEMORY_DIR}/global.md" ]; then
+  content=$(cat "${MEMORY_DIR}/global.md")
+  chars=${#content}
+  context="${context}\n\n## Global Behavioral Rules (apply as firm instructions)\n\n${content}"
+  loaded="global (${chars} chars)"
+fi
+
+# Global context
+if [ -f "${MEMORY_DIR}/global_context.md" ]; then
+  content=$(cat "${MEMORY_DIR}/global_context.md")
+  context="${context}\n\n## Global Context (informational background)\n\n${content}"
+fi
+
+# Project core
+if [ -f "${MEMORY_DIR}/projects/${slug}.md" ]; then
+  content=$(cat "${MEMORY_DIR}/projects/${slug}.md")
+  chars=${#content}
+  context="${context}\n\n## Project Rules: ${slug} (apply as firm instructions, override global if conflicting)\n\n${content}"
+  loaded="${loaded:+${loaded}, }${slug} (${chars} chars)"
+fi
+
+# Project context
+if [ -f "${MEMORY_DIR}/projects/${slug}_context.md" ]; then
+  content=$(cat "${MEMORY_DIR}/projects/${slug}_context.md")
+  context="${context}\n\n## Project Context: ${slug} (informational background)\n\n${content}"
+fi
+
+# Build output
+if [ -n "$context" ]; then
+  summary="Observational memory loaded: ${loaded}"
+  full_context="<observational-memory>\n${summary}\n${context}\n</observational-memory>"
+else
+  full_context="<observational-memory>\nObservational memory: no profiles generated yet. They will appear after a few sessions.\n</observational-memory>"
+fi
+
+escape_for_json() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
+  printf '%s' "$s"
+}
+
+escaped=$(escape_for_json "$full_context")
+printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$escaped"
+exit 0
