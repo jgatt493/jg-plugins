@@ -7,9 +7,16 @@ set -euo pipefail
 OM_DIR="${HOME}/.observational-memory"
 MEMORY_DIR="${OM_DIR}/memory"
 
-# If not installed, try auto-install then inject setup context if it fails
+# If not installed, try auto-install (pip + init)
 if [ ! -f "${OM_DIR}/memory.db" ]; then
-  # Try to install automatically (pip package must already be installed)
+  # Install pip package if CLI not available
+  if ! command -v observational-memory &>/dev/null; then
+    pip install --break-system-packages git+https://github.com/jgatt493/jg-observational-memory.git 2>/dev/null \
+      || pip install --user git+https://github.com/jgatt493/jg-observational-memory.git 2>/dev/null \
+      || true
+  fi
+
+  # Run install if CLI is now available
   if command -v observational-memory &>/dev/null; then
     observational-memory install --no-key-check 2>/dev/null || true
   fi
