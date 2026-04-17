@@ -7,25 +7,33 @@ set -euo pipefail
 OM_DIR="${HOME}/.observational-memory"
 MEMORY_DIR="${OM_DIR}/memory"
 
-# If not installed, inject setup instructions
+# If not installed, try auto-install then inject setup context if it fails
 if [ ! -f "${OM_DIR}/memory.db" ]; then
-  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-  PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-  setup_content=$(cat "${PLUGIN_ROOT}/skills/context.md" 2>/dev/null || echo "Observational memory plugin installed but skill file not found.")
+  # Try to install automatically (pip package must already be installed)
+  if command -v observational-memory &>/dev/null; then
+    observational-memory install --no-key-check 2>/dev/null || true
+  fi
 
-  escape_for_json() {
-    local s="$1"
-    s="${s//\\/\\\\}"
-    s="${s//\"/\\\"}"
-    s="${s//$'\n'/\\n}"
-    s="${s//$'\r'/\\r}"
-    s="${s//$'\t'/\\t}"
-    printf '%s' "$s"
-  }
+  # If still no DB after install attempt, inject setup instructions for the agent
+  if [ ! -f "${OM_DIR}/memory.db" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+    setup_content=$(cat "${PLUGIN_ROOT}/skills/context.md" 2>/dev/null || echo "Observational memory plugin installed but skill file not found.")
 
-  escaped=$(escape_for_json "$setup_content")
-  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$escaped"
-  exit 0
+    escape_for_json() {
+      local s="$1"
+      s="${s//\\/\\\\}"
+      s="${s//\"/\\\"}"
+      s="${s//$'\n'/\\n}"
+      s="${s//$'\r'/\\r}"
+      s="${s//$'\t'/\\t}"
+      printf '%s' "$s"
+    }
+
+    escaped=$(escape_for_json "$setup_content")
+    printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$escaped"
+    exit 0
+  fi
 fi
 
 # Derive project slug from cwd: basename, lowercase, non-alnum to dash, strip leading/trailing dashes
