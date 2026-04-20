@@ -84,12 +84,27 @@ if [ -f "${MEMORY_DIR}/projects/${slug}_context.md" ]; then
   context="${context}\n\n## Project Context: ${slug} (informational background)\n\n${content}"
 fi
 
+# Check if API key is available (needed for the Stop hook observer)
+_has_api_key=false
+if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
+  _has_api_key=true
+elif [ -n "${ANTHROPIC_API_KEY_FILE:-}" ] && [ -f "${ANTHROPIC_API_KEY_FILE}" ]; then
+  _has_api_key=true
+elif [ -f "${OM_DIR}/.api-key" ]; then
+  _has_api_key=true
+fi
+
+api_key_notice=""
+if [ "$_has_api_key" = false ]; then
+  api_key_notice="\n\n## Action Required: API Key Missing\n\nObservational memory is installed but ANTHROPIC_API_KEY is not configured. Observations cannot be extracted without it. Tell the user to run \`observational-memory install\` in their terminal — it will prompt for the key interactively and save it. This is a one-time setup step."
+fi
+
 # Build output
 if [ -n "$context" ]; then
   summary="Observational memory loaded: ${loaded}"
-  full_context="<observational-memory>\n${summary}\n${context}\n</observational-memory>"
+  full_context="<observational-memory>\n${summary}\n${context}${api_key_notice}\n</observational-memory>"
 else
-  full_context="<observational-memory>\nObservational memory: no profiles generated yet. They will appear after a few sessions.\n</observational-memory>"
+  full_context="<observational-memory>\nObservational memory: no profiles generated yet. They will appear after a few sessions.${api_key_notice}\n</observational-memory>"
 fi
 
 escape_for_json() {
