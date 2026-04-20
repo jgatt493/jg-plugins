@@ -8,25 +8,7 @@ Check if `~/.observational-memory/memory.db` exists.
 
 **If it exists**, skip to Step 2.
 
-**If it does NOT exist**, run through setup:
-
-1. Check if the `observational-memory` CLI is available: `which observational-memory`
-2. If not installed, install it:
-   ```
-   pip install --break-system-packages git+https://github.com/jgatt493/jg-observational-memory.git
-   ```
-   If pip fails with a permissions error, try with `--user` flag instead of `--break-system-packages`.
-   If the repo is not accessible, tell the user: "The observational memory repo may be private. Check https://github.com/jgatt493/jg-observational-memory for access."
-3. Run `observational-memory install` — this creates `~/.observational-memory/`, initializes the SQLite database, and wires the Claude Code Stop hook.
-4. Check if `ANTHROPIC_API_KEY` is set in the shell environment. **This is required, not optional.** The observer calls Claude Haiku to extract observations. If not set:
-   - Tell the user: "ANTHROPIC_API_KEY is required. Add it to ~/.zshenv so it's available to all shells including the hook subprocess."
-   - Stop setup here — the system will silently fail without it.
-5. If the user has existing Claude Code sessions (check if `~/.claude/projects/` has `.jsonl` files), run backfill and reflect:
-   ```
-   observational-memory backfill
-   observational-memory reflect --all
-   ```
-   This processes past sessions and generates the initial behavioral profile. It may take a few minutes.
+**If it does NOT exist**, tell the user to run `om install` in their terminal. That single command handles everything — directories, database, hooks, API key prompt. If `om` is not found, they need `pip install observational-memory` first. Do NOT walk them through manual steps.
 
 Once setup is complete, continue to Step 2.
 

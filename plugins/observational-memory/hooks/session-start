@@ -7,6 +7,16 @@ set -euo pipefail
 OM_DIR="${HOME}/.observational-memory"
 MEMORY_DIR="${OM_DIR}/memory"
 
+escape_for_json() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
+  printf '%s' "$s"
+}
+
 # If not installed, try auto-install (pip + init)
 if [ ! -f "${OM_DIR}/memory.db" ]; then
   # Find the best python3 — prefer Homebrew (versioned) over system
@@ -27,23 +37,10 @@ if [ ! -f "${OM_DIR}/memory.db" ]; then
     "$_om_python" -m observational_memory install --no-key-check &>/dev/null || true
   fi
 
-  # If still no DB after install attempt, inject setup instructions for the agent
+  # If still no DB after install attempt, inject a short setup nudge
   if [ ! -f "${OM_DIR}/memory.db" ]; then
-    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-    PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-    setup_content=$(cat "${PLUGIN_ROOT}/skills/context.md" 2>/dev/null || echo "Observational memory plugin installed but skill file not found.")
-
-    escape_for_json() {
-      local s="$1"
-      s="${s//\\/\\\\}"
-      s="${s//\"/\\\"}"
-      s="${s//$'\n'/\\n}"
-      s="${s//$'\r'/\\r}"
-      s="${s//$'\t'/\\t}"
-      printf '%s' "$s"
-    }
-
-    escaped=$(escape_for_json "$setup_content")
+    setup_msg="<observational-memory>\nSetup required: tell the user to run \`om install\` in their terminal. That single command handles everything (directories, database, hooks, API key). If \`om\` is not found, they need to install the package first: \`pip install observational-memory\`.\n</observational-memory>"
+    escaped=$(escape_for_json "$setup_msg")
     printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$escaped"
     exit 0
   fi
@@ -96,7 +93,7 @@ fi
 
 api_key_notice=""
 if [ "$_has_api_key" = false ]; then
-  api_key_notice="\n\n## Action Required: API Key Missing\n\nObservational memory is installed but ANTHROPIC_API_KEY is not configured. Observations cannot be extracted without it. Tell the user to run \`observational-memory install\` in their terminal — it will prompt for the key interactively and save it. This is a one-time setup step."
+  api_key_notice="\n\n## Action Required: API Key Missing\n\nObservational memory is installed but ANTHROPIC_API_KEY is not configured. Observations cannot be extracted without it. Tell the user to run \`om install\` in their terminal — it will prompt for the key interactively and save it. This is a one-time setup step."
 fi
 
 # Build output
@@ -106,16 +103,6 @@ if [ -n "$context" ]; then
 else
   full_context="<observational-memory>\nObservational memory: no profiles generated yet. They will appear after a few sessions.${api_key_notice}\n</observational-memory>"
 fi
-
-escape_for_json() {
-  local s="$1"
-  s="${s//\\/\\\\}"
-  s="${s//\"/\\\"}"
-  s="${s//$'\n'/\\n}"
-  s="${s//$'\r'/\\r}"
-  s="${s//$'\t'/\\t}"
-  printf '%s' "$s"
-}
 
 escaped=$(escape_for_json "$full_context")
 printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$escaped"
