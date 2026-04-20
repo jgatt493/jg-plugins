@@ -9,16 +9,22 @@ MEMORY_DIR="${OM_DIR}/memory"
 
 # If not installed, try auto-install (pip + init)
 if [ ! -f "${OM_DIR}/memory.db" ]; then
-  # Install pip package if CLI not available
-  if ! command -v observational-memory &>/dev/null; then
-    pip install --break-system-packages git+https://github.com/jgatt493/jg-observational-memory.git 2>/dev/null \
-      || pip install --user git+https://github.com/jgatt493/jg-observational-memory.git 2>/dev/null \
+  # Find the best python3 — prefer Homebrew (versioned) over system
+  _om_python=""
+  for _p in /opt/homebrew/bin/python3.13 /opt/homebrew/bin/python3.12 /opt/homebrew/bin/python3 /usr/local/bin/python3 python3; do
+    if command -v "$_p" &>/dev/null; then _om_python="$_p"; break; fi
+  done
+
+  # Install pip package if not importable
+  if [ -n "$_om_python" ] && ! "$_om_python" -c "import observational_memory" &>/dev/null; then
+    "$_om_python" -m pip install --break-system-packages git+https://github.com/jgatt493/jg-observational-memory.git &>/dev/null \
+      || "$_om_python" -m pip install --user git+https://github.com/jgatt493/jg-observational-memory.git &>/dev/null \
       || true
   fi
 
-  # Run install if CLI is now available
-  if command -v observational-memory &>/dev/null; then
-    observational-memory install --no-key-check 2>/dev/null || true
+  # Run install via python -m (avoids PATH/binary issues)
+  if [ -n "$_om_python" ] && "$_om_python" -c "import observational_memory" &>/dev/null; then
+    "$_om_python" -m observational_memory install --no-key-check &>/dev/null || true
   fi
 
   # If still no DB after install attempt, inject setup instructions for the agent
