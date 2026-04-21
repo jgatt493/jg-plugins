@@ -1,0 +1,8 @@
+{
+  "name": "mini-tdd-harness",
+  "description": "Automated TDD harness — write test specs, have Claude Code implement them. Includes a skill for writing specs and a Go CLI for running them.",
+  "author": {
+    "name": "Jeremy Gatt",
+    "email": "jeremy@jeremygatt.com"
+  }
+}

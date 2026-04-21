@@ -8,6 +8,11 @@
       "name": "observational-memory",
       "source": "./plugins/observational-memory",
       "description": "Automatic behavioral profiling for Claude Code sessions. Watches how you work, extracts patterns, and builds a portable behavioral profile that any AI agent can load."
+    },
+    {
+      "name": "mini-tdd-harness",
+      "source": "./plugins/mini-tdd-harness",
+      "description": "Automated TDD harness — write test specs, have Claude Code implement them. Includes a skill for writing specs and a Go CLI for running them."
     }
   ]
 }
