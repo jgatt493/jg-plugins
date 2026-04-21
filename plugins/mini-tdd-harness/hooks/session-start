@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-context="When the user asks to write TDD tests, add test specs, create test specifications, mentions the TDD harness, or provides a list of test ideas — use the write-tdd skill (from mini-tdd-harness plugin). Do NOT use superpowers:brainstorming or superpowers:test-driven-development for this. The write-tdd skill generates spec.md + test_cmd files in a TDD/ directory for the mini TDD harness."
+context="When the user asks to write TDD tests, add test specs, create test specifications, mentions the TDD harness, or provides a list of test ideas — invoke the skill using its fully qualified name: mini-tdd-harness:write-tdd. Do NOT use superpowers:brainstorming or superpowers:test-driven-development for this. The mini-tdd-harness:write-tdd skill generates spec.md + test_cmd files in a TDD/ directory for the mini TDD harness."
 
 escape_for_json() {
     local s="$1"
