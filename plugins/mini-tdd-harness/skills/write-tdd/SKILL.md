@@ -1,11 +1,11 @@
 ---
 name: write-tdd
-description: Use when the user wants to create, edit, or manage TDD test specifications — triggered by "write TDD tests", "add test specs", "I need tests for X", providing a list of test ideas, or discussing what needs test coverage in a project
+description: Use when the user wants to spec out features, add functionality, or define what to build — triggered by "write TDD tests", "spec out X", "I want to add X", "build X for me", providing a list of features, or discussing what to build next
 ---
 
-# Write TDD Test Specs
+# Write TDD Specs — Define What to Build
 
-Generate test specifications for the mini TDD harness. Each test is a directory under `TDD/` containing `spec.md` (requirement) and `test_cmd` (verification command).
+Spec out features and functionality as TDD test specifications. The harness will then spawn Claude Code sessions to **write the implementation code** for each spec. This is a code generation system, not a test runner — the specs define what to build, the tests just verify it got built correctly.
 
 ## Harness Setup
 
@@ -40,10 +40,11 @@ harness version                # check installed version
 
 ## When to Use
 
-- User asks to write TDD tests or test specs
-- User provides a list of features/requirements to test
-- User wants to explore what needs testing in a project
-- User wants to break down, refine, or edit existing test specs
+- User wants to spec out new features or functionality
+- User says "I want to add X", "build X", "spec out X"
+- User provides a list of features/requirements to build
+- User wants to explore what to build next in a project
+- User wants to break down, refine, or edit existing specs
 
 ## Process
 
@@ -84,25 +85,25 @@ digraph write_tdd {
 ## Before Starting
 
 1. **Check harness** — `which harness` to verify it's installed
-2. **Ask the user what they want.** Do NOT start reading the project or generating tests until the user has told you what they're looking for. Ask a simple question like: "What would you like to write tests for? I can explore the whole project, focus on a specific area, or you can give me a list."
+2. **Ask the user what they want to build.** Do NOT start reading the project or generating specs until the user has told you what they're looking for. Ask a simple question like: "What do you want to build or add? I can look at the project and suggest features, focus on a specific area, or you can give me a list of what you want."
 3. Once you know the mode, **then** read the project, check existing TDD/, and identify the test runner.
 
 **NEVER start exploring or generating without asking the user first.** Even if the request seems obvious, confirm before doing work.
 
 ## Detecting Mode
 
-**Exploratory** — User gives a vague request ("write TDD tests for this app", "what needs testing?"):
+**Exploratory** — User gives a vague request ("what should I build next?", "spec out this app"):
 - Scan the full project structure and source code
-- Identify areas that need coverage: features, endpoints, modules, edge cases
-- Propose a comprehensive numbered list
+- Identify features to add, gaps to fill, improvements to make
+- Propose a comprehensive numbered list of things to build
 
-**Directed** — User names a specific area ("tests for the auth system", "test the parser"):
+**Directed** — User names a specific feature ("add a login system", "I need caching"):
 - Read the relevant source code deeply
-- Propose tests specific to that area
+- Propose specs for that feature, broken into buildable units
 
-**Bulk Import** — User provides a list of test ideas:
-- Parse each item into a test
-- Suggest splitting items that are too broad (multiple concerns in one test)
+**Bulk Import** — User provides a list of features/requirements:
+- Parse each item into a spec
+- Suggest splitting items that are too broad (multiple concerns in one spec)
 - Suggest merging items that are too narrow
 
 ## Presenting the Test List
