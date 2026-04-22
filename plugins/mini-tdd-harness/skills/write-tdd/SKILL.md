@@ -77,9 +77,10 @@ digraph write_tdd {
 ## Before Starting
 
 1. **Check harness** — `which harness` to verify it's installed
-2. **Read the project** — understand tech stack, directory structure, existing code
-3. **Check existing TDD/** — read any existing `spec.md` files to avoid duplicates
-4. **Identify test runner** — determine the right verification commands for this project
+2. **Ask the user what they want.** Do NOT start reading the project or generating tests until the user has told you what they're looking for. Ask a simple question like: "What would you like to write tests for? I can explore the whole project, focus on a specific area, or you can give me a list."
+3. Once you know the mode, **then** read the project, check existing TDD/, and identify the test runner.
+
+**NEVER start exploring or generating without asking the user first.** Even if the request seems obvious, confirm before doing work.
 
 ## Detecting Mode
 
