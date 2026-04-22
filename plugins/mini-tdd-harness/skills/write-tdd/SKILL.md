@@ -23,12 +23,19 @@ rm -rf /tmp/jg-mini-harness
 
 Present these commands to the user and let them run it. Do NOT execute the install yourself — the user handles setup.
 
-**If `harness` is found**, proceed directly to writing tests.
+**If `harness` is found**, run `harness version` to show the user which version they have, then proceed to writing tests.
+
+**Updating the harness binary:**
+If the user asks to update, or if you suspect the binary is outdated, give them these commands:
+```bash
+cd /tmp && git clone https://github.com/jgatt493/jg-mini-harness.git && cd jg-mini-harness && go build -o harness ./cmd/harness && cp harness /usr/local/bin/harness && rm -rf /tmp/jg-mini-harness && harness version
+```
 
 After tests are generated, remind the user how to run:
 ```bash
 harness run                    # from project root, scans ./TDD
 harness run --retry-failed     # re-run failed tests
+harness version                # check installed version
 ```
 
 ## When to Use
