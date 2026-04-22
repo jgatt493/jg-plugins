@@ -156,8 +156,9 @@ A single-line shell command. The harness reads the first line and executes it vi
 
 Rules:
 - Exit 0 = pass, non-zero = fail
-- Runs from the project root directory
+- Runs from the directory where `harness run` is executed (the current working directory)
 - Must be specific enough to verify this test's requirement
+- **NEVER use `cd` in test commands.** All paths must be relative to the current directory. The user runs `harness run` from wherever TDD/ lives — test commands must work from that same directory.
 
 For multi-step verification, chain with `&&`:
 ```
