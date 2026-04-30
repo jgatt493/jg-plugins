@@ -1,0 +1,9 @@
+{
+  "name": "decompose-to-queue",
+  "version": "0.1.0",
+  "description": "Skill for decomposing high-level intents into atomic task files for the aq (jg-agent-queue) runner. Routes prescriptive work to local pi/Qwen3, escalates judgment-heavy work back to Claude.",
+  "author": {
+    "name": "Jeremy Gatt",
+    "email": "jeremy@jeremygatt.com"
+  }
+}

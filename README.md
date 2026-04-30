@@ -19,3 +19,19 @@ Automatic behavioral profiling for Claude Code sessions. Watches how you work, e
 ```
 /plugin install observational-memory@jg-plugins
 ```
+
+### Mini TDD Harness
+
+Automated TDD harness — write test specs, have Claude Code implement them. Includes a skill for writing specs and a Go CLI for running them.
+
+```
+/plugin install mini-tdd-harness@jg-plugins
+```
+
+### Decompose to Queue
+
+Skill for decomposing high-level intents into atomic task files for the [`aq`](https://github.com/jgatt493/jg-agent-queue) runner. Routes prescriptive work to local pi/Qwen3, escalates judgment-heavy work back to Claude.
+
+```
+/plugin install decompose-to-queue@jg-plugins
+```

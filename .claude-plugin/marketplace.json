@@ -13,6 +13,11 @@
       "name": "mini-tdd-harness",
       "source": "./plugins/mini-tdd-harness",
       "description": "Automated TDD harness — write test specs, have Claude Code implement them. Includes a skill for writing specs and a Go CLI for running them."
+    },
+    {
+      "name": "decompose-to-queue",
+      "source": "./plugins/decompose-to-queue",
+      "description": "Decompose high-level intents into atomic task files for the aq (jg-agent-queue) runner. Routes prescriptive work to local pi/Qwen3, escalates judgment-heavy work back to Claude."
     }
   ]
 }
